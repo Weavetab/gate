@@ -1,0 +1,6 @@
+name = "weavetab-gate-bridge"
+main = "index.js"
+compatibility_date = "2026-01-01"
+
+[vars]
+UPSTREAM_ORIGIN = "https://weavetab-gate.hf.space"

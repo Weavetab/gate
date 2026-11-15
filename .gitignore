@@ -1,0 +1,6 @@
+/target
+/model/*.onnx
+/model/tokenizer.json
+.env
+node_modules
+.wrangler

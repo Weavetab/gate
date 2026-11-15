@@ -1,0 +1,17 @@
+name: Keep HF Space Awake
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Weavetab Gate
+        run: |
+          curl -fsS --max-time 15 -A "weavetab-keepalive/1.0" https://api.weavetab.dev/health || true
+          if [ -n "${{ vars.HF_SPACE_URL }}" ]; then
+            curl -fsS --max-time 15 -A "weavetab-keepalive/1.0" "${{ vars.HF_SPACE_URL }}/health" || true
+          fi
