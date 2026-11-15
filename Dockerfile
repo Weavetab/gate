@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 COPY --from=builder /app/target/release/weavetab-gate /usr/local/bin/weavetab-gate
 RUN mkdir -p /app/model \
-  && curl -fsSL -o /app/model/model_i8.onnx https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/model_i8.onnx \
-  && curl -fsSL -o /app/model/tokenizer.json https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/tokenizer.json
+  && curl -fsSL -o /app/model/model_i8.onnx https://huggingface.co/weavetab/gate-1/resolve/main/model_i8.onnx \
+  && curl -fsSL -o /app/model/tokenizer.json https://huggingface.co/weavetab/gate-1/resolve/main/tokenizer.json
 ENV PORT=7860
 EXPOSE 7860
 CMD ["weavetab-gate"]
