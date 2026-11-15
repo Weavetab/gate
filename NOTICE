@@ -1,11 +1,28 @@
-Weavetab Gate (https://github.com/weavetab/gate)
-Server & Gateway Source Code: GNU Affero General Public License v3.0 (AGPL-3.0)
-Copyright (c) 2026 Weavetab
+Weavetab Gate
+Copyright 2026 Weavetab (https://weavetab.dev)
 
-Model Weights (weavetab/gate-1): Apache License, Version 2.0
-This product includes model weights derived from:
-- knowledgator/gliclass-edge-v3.0 (Apache License 2.0, Knowledgator)
-- cnmoro/gliclass-edge-v3.0-onnx (INT8 ONNX export)
+This product includes original Rust runtime, multimodal routing, caching,
+calibration, and multi-language SDKs (Node.js, Python, C ABI) developed by
+Weavetab under the Apache License, Version 2.0.
 
-The model weights remain licensed under the Apache License, Version 2.0.
-The AGPL-3.0 license applies to the Weavetab Gate server, API gateway, and tooling.
+Third-Party Model Weights & Upstream Attribution:
+
+1. Text Zero-Shot Classification Encoder:
+   - Upstream Model: knowledgator/gliclass-edge-v3.0
+     https://huggingface.co/knowledgator/gliclass-edge-v3.0
+     License: Apache License 2.0 (Knowledgator)
+   - INT8 ONNX Export: cnmoro/gliclass-edge-v3.0-onnx
+     https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx
+     License: Apache License 2.0
+
+2. Vision-Language Zero-Shot Image Encoder:
+   - Upstream Model: wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M
+     https://github.com/wkcn/TinyCLIP
+     License: MIT License
+   - INT8 ONNX Export: twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX
+     https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX
+     License: MIT License
+
+3. Runtime Dependencies:
+   - ONNX Runtime via `ort` (MIT / Apache-2.0)
+   - Hugging Face `tokenizers` (Apache-2.0)

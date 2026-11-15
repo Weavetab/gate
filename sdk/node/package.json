@@ -1,0 +1,53 @@
+{
+  "name": "@weavetab/gate",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local-first multimodal zero-shot decision engine for Node.js and TypeScript (text & image -> choices, yes/no, score) powered by Rust + INT8 ONNX.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Weavetab/gate.git",
+    "directory": "sdk/node"
+  },
+  "keywords": [
+    "ai",
+    "classification",
+    "zero-shot",
+    "decisions",
+    "onnx",
+    "multimodal",
+    "rust",
+    "weavetab"
+  ],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "napi": {
+    "name": "weavetab-gate",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-gnu",
+        "aarch64-apple-darwin",
+        "x86_64-pc-windows-msvc"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "artifacts": "napi artifacts",
+    "test": "node --test test.mjs"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

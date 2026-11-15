@@ -1,0 +1,16 @@
+[package]
+name = "weavetab-gate-node"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "2", default-features = false, features = ["napi4"] }
+napi-derive = "2"
+weavetab-gate = { path = "../../crates/gate-core" }
+
+[build-dependencies]
+napi-build = "2"

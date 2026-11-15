@@ -1,0 +1,16 @@
+[package]
+name = "weavetab-gate"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Local-first multimodal zero-shot decision engine (text & image -> choices, yes/no, score) powered by Rust + INT8 ONNX."
+
+[dependencies]
+ort = { version = "2.0.0-rc.10", features = ["download-binaries"] }
+tokenizers = { version = "0.21", default-features = false, features = ["fancy-regex"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+serde = { version = "1", features = ["derive"] }
+ureq = "2"
+dirs = "5"
+thiserror = "2"

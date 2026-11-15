@@ -1,6 +1,9 @@
-/target
-/model/*.onnx
-/model/tokenizer.json
-.env
-node_modules
-.wrangler
+target/
+node_modules/
+dist/
+*.node
+*.whl
+*.onnx
+*.part
+__pycache__/
+.pytest_cache/
