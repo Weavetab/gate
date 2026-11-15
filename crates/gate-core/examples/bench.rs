@@ -4,6 +4,26 @@ use weavetab_gate::{Gate, Input};
 fn main() {
     let gate = Gate::default();
 
+    if let Some(img_path) = std::env::args().nth(1) {
+        let bytes = std::fs::read(&img_path).expect("failed to read image");
+        // Warmup vision download/load
+        let _ = gate.decide(Input::ImageBytes(&bytes), &["warmup", "other"]).unwrap();
+
+        let res = gate
+            .decide(
+                Input::ImageBytes(&bytes),
+                &[
+                    "a Windows desktop taskbar with app icons and clock",
+                    "a photo of a mountain landscape",
+                    "a handwritten math equation",
+                    "a cat sitting on a sofa",
+                ],
+            )
+            .unwrap();
+        println!("image ({} bytes): {:?}", bytes.len(), res);
+        return;
+    }
+
     // Warmup downloads/loads weights once before timing
     let _ = gate.decide(Input::Text("warmup"), &["a", "b"]).unwrap();
 
