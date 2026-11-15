@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use crate::GateError;
 
 pub const DEFAULT_TEXT_MODEL_URL: &str =
-    "https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/model_quantized.onnx";
+    "https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/model_i8.onnx";
 pub const DEFAULT_TEXT_TOK_URL: &str =
     "https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/tokenizer.json";
 

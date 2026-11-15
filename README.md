@@ -22,10 +22,10 @@ import { Gate } from "@weavetab/gate";
 const gate = new Gate();
 
 // Text -> choice
-const action = gate.decide("player has 2 hearts and creeper nearby", [
-  "retreat",
-  "attack",
-  "eat food",
+const action = gate.decide("payment webhook returned 502 bad gateway", [
+  "incident",
+  "billing",
+  "spam",
 ]);
 
 // Image -> choice
