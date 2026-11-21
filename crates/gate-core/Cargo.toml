@@ -3,8 +3,13 @@ name = "weavetab-gate"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+authors.workspace = true
 repository.workspace = true
+homepage.workspace = true
+readme = "../../README.md"
 description = "Local-first multimodal zero-shot decision engine (text & image -> choices, yes/no, score) powered by Rust + INT8 ONNX."
+keywords = ["ai", "classification", "zero-shot", "onnx", "multimodal"]
+categories = ["science", "text-processing"]
 
 [dependencies]
 ort = { version = "2.0.0-rc.10", features = ["download-binaries"] }
