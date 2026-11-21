@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict, PyList};
-use weavetab_gate::{Config as CoreConfig, Gate as CoreGate, Input, OptionScore};
+use gate_core::{Config as CoreConfig, Gate as CoreGate, Input, OptionScore};
 
-fn to_py_err(e: weavetab_gate::GateError) -> PyErr {
+fn to_py_err(e: gate_core::GateError) -> PyErr {
     PyValueError::new_err(e.to_string())
 }
 
@@ -22,7 +22,7 @@ fn scores_to_py<'py>(py: Python<'py>, scores: &[OptionScore]) -> PyResult<Bound<
 
 fn run_with_input<T>(
     input: &Bound<'_, PyAny>,
-    f: impl FnOnce(Input<'_>) -> Result<T, weavetab_gate::GateError>,
+    f: impl FnOnce(Input<'_>) -> Result<T, gate_core::GateError>,
 ) -> PyResult<T> {
     if let Ok(text) = input.extract::<String>() {
         return f(Input::Text(&text)).map_err(to_py_err);

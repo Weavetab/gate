@@ -54,7 +54,13 @@ jobs:
       - working-directory: sdk/node
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public
+        run: |
+          VER=$(node -p "require('./package.json').version")
+          if npm view "@weavetab/gate@$VER" version >/dev/null 2>&1; then
+            echo "@weavetab/gate@$VER already published; skipping"
+            exit 0
+          fi
+          npm publish --access public
 
   build-python:
     strategy:
@@ -84,6 +90,7 @@ jobs:
           command: build
           working-directory: sdk/python
           manylinux: ${{ matrix.manylinux }}
+          before-script-linux: yum install -y openssl-devel
           args: --release --out dist
       - if: matrix.sdist
         uses: PyO3/maturin-action@v1
@@ -122,6 +129,11 @@ jobs:
         run: |
           if [ -z "$CARGO_REGISTRY_TOKEN" ]; then
             echo "CARGO_REGISTRY_TOKEN not set; skipping crates.io publish"
+            exit 0
+          fi
+          VER=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(next(p['version'] for p in json.load(sys.stdin)['packages'] if p['name']=='weavetab-gate'))")
+          if curl -sf "https://crates.io/api/v1/crates/weavetab-gate/$VER" | grep -q "\"num\":\"$VER\""; then
+            echo "weavetab-gate@$VER already published; skipping"
             exit 0
           fi
           cargo publish -p weavetab-gate --locked
