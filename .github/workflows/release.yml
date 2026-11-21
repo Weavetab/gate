@@ -5,9 +5,23 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      npm:
+        description: "Build & publish npm (@weavetab/gate)"
+        type: boolean
+        default: true
+      pypi:
+        description: "Build & publish PyPI (weavetab-gate)"
+        type: boolean
+        default: true
+      crates:
+        description: "Publish crates.io (weavetab-gate)"
+        type: boolean
+        default: true
 
 jobs:
   build-node:
+    if: github.event_name == 'push' || inputs.npm == true
     strategy:
       fail-fast: false
       matrix:
@@ -63,19 +77,17 @@ jobs:
           npm publish --access public
 
   build-python:
+    if: github.event_name == 'push' || inputs.pypi == true
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
             manylinux: "2_28"
-            sdist: true
           - os: macos-latest
             manylinux: ""
-            sdist: false
           - os: windows-latest
             manylinux: ""
-            sdist: false
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -92,12 +104,6 @@ jobs:
           manylinux: ${{ matrix.manylinux }}
           before-script-linux: yum install -y openssl-devel
           args: --release --out dist
-      - if: matrix.sdist
-        uses: PyO3/maturin-action@v1
-        with:
-          command: sdist
-          working-directory: sdk/python
-          args: --out dist
       - uses: actions/upload-artifact@v4
         with:
           name: python-dist-${{ matrix.os }}
@@ -120,6 +126,7 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
 
   publish-crates:
+    if: github.event_name == 'push' || inputs.crates == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -132,7 +139,7 @@ jobs:
             exit 0
           fi
           VER=$(cargo metadata --no-deps --format-version 1 | python3 -c "import sys,json; print(next(p['version'] for p in json.load(sys.stdin)['packages'] if p['name']=='weavetab-gate'))")
-          if curl -sf "https://crates.io/api/v1/crates/weavetab-gate/$VER" | grep -q "\"num\":\"$VER\""; then
+          if curl -sf -A "weavetab-gate-ci" "https://crates.io/api/v1/crates/weavetab-gate/$VER" | grep -q "\"num\":\"$VER\""; then
             echo "weavetab-gate@$VER already published; skipping"
             exit 0
           fi
