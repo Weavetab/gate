@@ -31,6 +31,7 @@ jobs:
         run: |
           npm install
           npm run build
+          git checkout -- index.js index.d.ts
           npm test
 
   python-sdk:
@@ -50,6 +51,7 @@ jobs:
         with:
           command: build
           working-directory: sdk/python
+          manylinux: ${{ matrix.os == 'ubuntu-latest' && '2_28' || '' }}
           before-script-linux: yum install -y openssl-devel
           args: --release --out dist
       - uses: actions/upload-artifact@v4
