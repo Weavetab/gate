@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "weavetab-gate"
-version = "1.0.0"
+version = "1.1.0"
 description = "Local-first multimodal zero-shot decision engine (text & image -> choices, yes/no, score) without PyTorch."
 readme = "README.md"
 requires-python = ">=3.9"

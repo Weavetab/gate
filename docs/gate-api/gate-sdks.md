@@ -30,9 +30,7 @@ sdk/c/              # weavetab_gate.h C ABI (.dll / .so / .dylib) for C, C++, Go
 | Variable | Purpose |
 |---|---|
 | `WEAVETAB_GATE_CACHE` | Override default `~/.cache/weavetab-gate/` weight directory |
-| `WEAVETAB_GATE_TEXT_URL` | Custom bi-encoder text ONNX model URL |
-| `WEAVETAB_GATE_TEXT_TOK_URL` | Custom bi-encoder `tokenizer.json` URL |
-| `WEAVETAB_GATE_NLI_URL` | Custom NLI cross-encoder ONNX model URL |
-| `WEAVETAB_GATE_NLI_TOK_URL` | Custom NLI `tokenizer.json` URL |
+| `WEAVETAB_GATE_TEXT_URL` | Custom unified text NLI ONNX model URL |
+| `WEAVETAB_GATE_TEXT_TOK_URL` | Custom unified text `tokenizer.json` URL |
 | `WEAVETAB_GATE_VISION_URL` | Custom vision ONNX model URL |
 | `WEAVETAB_GATE_VISION_TOK_URL` | Custom vision `tokenizer.json` URL |

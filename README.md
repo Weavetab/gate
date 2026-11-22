@@ -32,18 +32,20 @@ Feed **text** or **images** alongside choices, binary statements, or ordered rub
 
 ---
 
-## Measured CPU Benchmarks
+## Measured Benchmarks (`72.2 MB` Unified ONNX)
 
-Measured locally on Windows x64 CPU (release Rust build, `threads = 4`, zero GPU):
+Measured on a **Linux x64 4-vCPU CPU (16 GB RAM, no GPU)** and **Tesla T4 GPU** against Google's `gemini-decision-1` across 56 zero-shot test cases:
 
-| Metric | **Weavetab Gate v1** (Local CPU) | **Google `gemini-decision-1`** (Cloud) |
+| Metric | **Weavetab Gate v1.1** (4-vCPU Linux CPU) | **Google `gemini-decision-1`** (Cloud) |
 | --- | --- | --- |
-| **Routing Latency (12 items)** | **`10.9 ms/item`** (`131 ms` total) | `415.8 ms/item` (`4,990 ms` total) |
-| **Yes/No Safety Accuracy (8 items)** | **`88%` (`7/8`)** | `88%` (`7/8`, 1 blocked) |
-| **Yes/No Latency (8 items)** | **`83.2 ms/item`** | `258.7 ms/item` |
+| **Overall Accuracy (56 cases)** | **`92.9%` (`52/56`)** (+25.0 pts vs v1.0) | `92.9%` (`52/56`, 1 blocked) |
+| **Routing (12 items)** | **`100.0%` (`12/12`)** · `109.0 ms/item` | `100.0%` (`12/12`) · `701.5 ms/item` |
+| **Safety Yes/No (10 items)** | **`100.0%` (`10/10`)** · `65.0 ms/item` | `90.0%` (`9/10`, 1 blocked) · `389.0 ms/item` |
+| **Sentiment (10 items)** | **`100.0%` (`10/10`)** · `67.5 ms/item` | `100.0%` (`10/10`) · `333.1 ms/item` |
+| **Spam/Intent (10 items)** | **`90.0%` (`9/10`)** · `83.6 ms/item` | `90.0%` (`9/10`) · `313.3 ms/item` |
+| **Hard Negation/IQ (6 items)** | **`100.0%` (`6/6`)** · `54.2 ms/item` | `100.0%` (`6/6`) · `480.4 ms/item` |
 | **Content-Policy Blocks** | **`0`** (local) | **`1`** (`400 prohibited_content`) |
-| **10,000 Unique Inputs (1 Call)** | **`72.9 s`** (`137.2 items/s`) | Multiple calls + rate limits |
-| **Cost** | **`$0`** (Apache-2.0, offline) | Rate-limited / `$0.10` per 1M tokens |
+| **Cost & Footprint** | **`$0`** · `72.2 MB` unified ONNX (`5.0–8.2 ms` on T4 GPU) | Rate-limited / `$0.10` per 1M tokens |
 
 ---
 
@@ -124,8 +126,7 @@ Full guides live in [`docs/`](docs/):
 
 Licensed under **Apache-2.0**. See [NOTICE](NOTICE) for full upstream attribution:
 
-- **Text bi-encoder**: `thenlper/gte-small` (MIT, quantized ONNX)
-- **NLI cross-encoder (`yes_no`)**: `cross-encoder/nli-deberta-v3-xsmall` (Apache-2.0 / MIT, quantized ONNX)
+- **Text zero-shot NLI cross-encoder**: `MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33` (MIT, `72.2 MB` quantized ONNX)
 - **Vision encoder**: `TinyCLIP-ViT-8M-16-Text-3M-YFCC15M` (MIT, INT8 ONNX)
 
 Questions or security reports: [contact@weavetab.dev](mailto:contact@weavetab.dev) · [weavetab.dev](https://weavetab.dev)

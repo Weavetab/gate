@@ -1,6 +1,5 @@
 mod cache;
 mod models;
-mod nli;
 mod text;
 mod vision;
 
@@ -13,7 +12,6 @@ use thiserror::Error;
 
 use cache::{hash_key, RingCache};
 use models::cache_dir;
-use nli::NliEngine;
 use text::TextEngine;
 use vision::VisionEngine;
 
@@ -110,7 +108,6 @@ pub struct Score {
 struct Inner {
     env: Option<ort::environment::Environment>,
     text: Option<TextEngine>,
-    nli: Option<NliEngine>,
     vision: Option<VisionEngine>,
     cache: RingCache<Vec<OptionScore>>,
 }
@@ -129,7 +126,6 @@ impl Gate {
             inner: Mutex::new(Inner {
                 env: None,
                 text: None,
-                nli: None,
                 vision: None,
                 cache: RingCache::new(cfg.cache_entries),
             }),
@@ -442,14 +438,14 @@ impl Gate {
 
         if !uniq_texts.is_empty() {
             let env = guard.env.as_ref().unwrap().clone();
-            if guard.nli.is_none() {
-                guard.nli = Some(NliEngine::load(&env, &self.dir, self.threads)?);
+            if guard.text.is_none() {
+                guard.text = Some(TextEngine::load(&env, &self.dir, self.threads)?);
             }
             let probs = guard
-                .nli
+                .text
                 .as_mut()
                 .unwrap()
-                .entailment_batch(&uniq_texts, question)?;
+                .yes_no_batch(&uniq_texts, question)?;
             for (u, p) in probs.into_iter().enumerate() {
                 let first_idx = text_targets[u][0];
                 guard.cache.put(

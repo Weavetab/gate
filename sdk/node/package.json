@@ -1,6 +1,6 @@
 {
   "name": "@weavetab/gate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Local-first multimodal zero-shot decision engine for Node.js and TypeScript (text & image -> choices, yes/no, score) powered by Rust + INT8 ONNX.",
   "main": "index.js",

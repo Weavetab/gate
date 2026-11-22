@@ -1702,7 +1702,7 @@ dependencies = [
 
 [[package]]
 name = "weavetab-gate"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "dirs",
  "image",
@@ -1715,7 +1715,7 @@ dependencies = [
 
 [[package]]
 name = "weavetab-gate-node"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "napi",
  "napi-build",

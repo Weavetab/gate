@@ -24,15 +24,14 @@ Gate lazy-loads each quantized ONNX engine only when that modality or primitive 
 
 | Engine | Used By | Upstream Model | License |
 |---|---|---|---|
-| **Bi-Encoder** | `decide`, `decide_batch`, `score`, `score_batch` | `thenlper/gte-small` (quantized ONNX) | MIT |
-| **NLI Cross-Encoder** | `yes_no`, `yes_no_batch` (text) | `cross-encoder/nli-deberta-v3-xsmall` (quantized ONNX) | Apache-2.0 / MIT |
+| **Unified Text NLI Cross-Encoder** | `decide`, `yes_no`, `score` (+ `_batch`) | `MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33` (`72.2 MB` quantized ONNX) | MIT |
 | **Vision Encoder** | Image inputs (`PNG` / `JPEG` / `WebP`) | `TinyCLIP-ViT-8M-16-Text-3M-YFCC15M` (INT8 ONNX) | MIT |
 
 Weights cache once in `~/.cache/weavetab-gate/` (or `%LOCALAPPDATA%\weavetab-gate` on Windows), overridable via `WEAVETAB_GATE_CACHE`.
 
 ## Why Gate vs Cloud Decision APIs
 
-- **Up to 10,000 inputs in one call**: Length-bucketed `[B, seq]` micro-batching (`B = 32`), in-batch deduplication, and `RingCache` pre-pass keep peak RAM flat even on 4–8 GB laptops while reserving 1 CPU core for the OS.
-- **17× faster end-to-end on routing**: `10.9 ms/item` locally vs `250–415 ms/item` over cloud RTT.
+- **Up to 10,000 inputs in one call**: Length-bucketed `[B, seq]` micro-batching (`B = 16`), in-batch deduplication, and `RingCache` pre-pass keep peak RAM flat even on 4–8 GB laptops while reserving 1 CPU core for the OS.
+- **3.7×–8.9× faster end-to-end on CPU**: `54.2–109.0 ms/item` locally vs `313.3–701.5 ms/item` over cloud RTT (and `5.0–8.2 ms/item` steady-state on Tesla T4 GPU).
 - **Zero content-policy blocks**: Cloud APIs return `400 prohibited_content` when you try to classify abusive, toxic, or phishing messages for moderation. Gate runs 100% locally and scores every input.
 - **\$0 per call**: No per-token billing, no RPM/TPM rate limits, works offline.

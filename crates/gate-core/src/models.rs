@@ -9,11 +9,6 @@ pub const DEFAULT_TEXT_MODEL_URL: &str =
 pub const DEFAULT_TEXT_TOK_URL: &str =
     "https://huggingface.co/weavetab/gate-1/resolve/main/text/tokenizer.json";
 
-pub const DEFAULT_NLI_MODEL_URL: &str =
-    "https://huggingface.co/weavetab/gate-1/resolve/main/nli/model_i8.onnx";
-pub const DEFAULT_NLI_TOK_URL: &str =
-    "https://huggingface.co/weavetab/gate-1/resolve/main/nli/tokenizer.json";
-
 pub const DEFAULT_VISION_MODEL_URL: &str =
     "https://huggingface.co/weavetab/gate-1/resolve/main/vision/model_i8.onnx";
 pub const DEFAULT_VISION_TOK_URL: &str =

@@ -7,17 +7,12 @@ Weavetab under the Apache License, Version 2.0.
 
 Third-Party Model Weights & Upstream Attribution:
 
-1. Text Zero-Shot Semantic Encoder:
-   - Upstream Model: thenlper/gte-small (ONNX quantized via Xenova/gte-small)
-     https://huggingface.co/thenlper/gte-small
+1. Unified Text Zero-Shot NLI Encoder (Choice, Yes/No, Rubric Score):
+   - Upstream Model: MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33
+     https://huggingface.co/MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33
      License: MIT License
 
-2. NLI Entailment / Yes-No Cross-Encoder:
-   - Upstream Model: cross-encoder/nli-deberta-v3-xsmall (ONNX quantized via Xenova/nli-deberta-v3-xsmall)
-     https://huggingface.co/cross-encoder/nli-deberta-v3-xsmall
-     License: Apache License 2.0 / MIT License
-
-3. Vision-Language Zero-Shot Image Encoder:
+2. Vision-Language Zero-Shot Image Encoder:
    - Upstream Model: wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M
      https://github.com/wkcn/TinyCLIP
      License: MIT License

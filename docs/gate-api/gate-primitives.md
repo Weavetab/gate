@@ -12,9 +12,9 @@ Every modality (`Text` or `ImageBytes`) flows through three typed decision primi
 
 | Question Type | Single API | Batch API (up to 10,000) | Primary Engine |
 |---|---|---|---|
-| **Choice** | `decide(input, choices)` | `decide_batch(inputs, choices)` | `gte-small` bi-encoder (text) / `TinyCLIP` (image) |
-| **Yes/No** | `yes_no(input, statement)` | `yes_no_batch(inputs, statement)` | `nli-deberta-v3-xsmall` NLI (text) / `TinyCLIP` (image) |
-| **Score** | `score(input, levels)` | `score_batch(inputs, levels)` | `gte-small` bi-encoder (text) / `TinyCLIP` (image) |
+| **Choice** | `decide(input, choices)` | `decide_batch(inputs, choices)` | `deberta-v3-xsmall-zeroshot-v1.1-all-33` (text) / `TinyCLIP` (image) |
+| **Yes/No** | `yes_no(input, statement)` | `yes_no_batch(inputs, statement)` | `deberta-v3-xsmall-zeroshot-v1.1-all-33` NLI (text) / `TinyCLIP` (image) |
+| **Score** | `score(input, levels)` | `score_batch(inputs, levels)` | `deberta-v3-xsmall-zeroshot-v1.1-all-33` (text) / `TinyCLIP` (image) |
 
 ---
 
@@ -32,14 +32,14 @@ Selects the highest-scoring option from `2` to `64` choices.
 **How `decide_batch` scales to 10,000 inputs without lagging low-end PCs:**
 1. Hashes every `(input, choices)` pair via FNV-1a and resolves `RingCache` hits first.
 2. Deduplicates identical uncached inputs inside the batch.
-3. Encodes the `choices` **once** (`[K, 384]`), then length-buckets unique texts into `B = 32` micro-batches padded only to each micro-batch's max sequence length.
-4. Scores via cosine similarity dot product + temperature-scaled softmax ($T = 0.05$).
+3. Length-buckets `(input, hypothesis)` pairs into `B = 16` micro-batches padded only to each micro-batch's max sequence length.
+4. Scores via NLI entailment margin (`entailment - contradiction`) + temperature-scaled softmax ($T = 1.5$).
 
 ---
 
 ## 2. Yes/No (`yes_no` / `yes_no_batch`)
 
-Evaluates whether a statement holds for the input. For text inputs, Gate automatically uses the **NLI entailment cross-encoder** (`nli-deberta-v3-xsmall`), which understands negation, safety rules, and prompt injections natively.
+Evaluates whether a statement holds for the input. For text inputs, Gate uses the unified **33-dataset NLI zero-shot cross-encoder** (`deberta-v3-xsmall-zeroshot-v1.1-all-33`) with contrastive hypotheses (`{statement}` vs `This is not true: {statement}`), handling negation, sarcasm, safety rules, and prompt injections natively.
 
 **Returns (`YesNo`):**
 - `answer` (`boolean`): `true` when `probability >= 0.5`

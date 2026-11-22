@@ -6,10 +6,8 @@ import onnxruntime as ort
 from huggingface_hub import HfApi
 
 SOURCES = {
-    "text/model_i8.onnx": "https://huggingface.co/Xenova/gte-small/resolve/main/onnx/model_quantized.onnx",
-    "text/tokenizer.json": "https://huggingface.co/Xenova/gte-small/resolve/main/tokenizer.json",
-    "nli/model_i8.onnx": "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/onnx/model_quantized.onnx",
-    "nli/tokenizer.json": "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/tokenizer.json",
+    "text/model_i8.onnx": "https://huggingface.co/MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33/resolve/main/onnx/model_quantized.onnx",
+    "text/tokenizer.json": "https://huggingface.co/MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33/resolve/main/tokenizer.json",
     "vision/model_i8.onnx": "https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX/resolve/main/onnx/model_int8.onnx",
     "vision/tokenizer.json": "https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX/resolve/main/tokenizer.json",
 }
@@ -28,9 +26,9 @@ tags:
   - weavetab
 ---
 
-# Weavetab Gate v1 (`weavetab/gate-1`)
+# Weavetab Gate v1.1 (`weavetab/gate-1`)
 
-Graph-optimized (`ORT_ENABLE_ALL`) INT8 ONNX weights for **[Weavetab Gate](https://github.com/Weavetab/gate)** — a local-first multimodal zero-shot decision engine in Rust with native Node.js (`@weavetab/gate`) and Python (`weavetab-gate`) bindings.
+Quantized INT8 ONNX weights for **[Weavetab Gate](https://github.com/Weavetab/gate)** — a local-first multimodal zero-shot decision engine in Rust with native Node.js (`@weavetab/gate`) and Python (`weavetab-gate`) bindings.
 
 - **GitHub**: [Weavetab/gate](https://github.com/Weavetab/gate)
 - **npm**: `npm install @weavetab/gate`
@@ -41,7 +39,7 @@ Graph-optimized (`ORT_ENABLE_ALL`) INT8 ONNX weights for **[Weavetab Gate](https
 ## Attribution & License
 
 Licensed under **Apache-2.0**. See `NOTICE` for full upstream model attribution:
-- Text encoder derived from `thenlper/gte-small` (MIT)
+- Unified text zero-shot NLI encoder derived from `MoritzLaurer/deberta-v3-xsmall-zeroshot-v1.1-all-33` (MIT)
 - Vision encoder derived from `wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M` (MIT)
 """
 
@@ -75,7 +73,7 @@ def main() -> None:
         download(url, raw / rel)
         dst = opt / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        if rel.endswith(".onnx"):
+        if rel == "vision/model_i8.onnx":
             optimize_onnx(raw / rel, dst)
         else:
             dst.write_bytes((raw / rel).read_bytes())
