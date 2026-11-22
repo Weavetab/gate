@@ -253,7 +253,7 @@ impl Gate {
 }
 
 #[pymodule]
-fn weavetab_gate(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Gate>()?;
     Ok(())
 }

@@ -1610,7 +1610,7 @@ dependencies = [
 
 [[package]]
 name = "weavetab-gate"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "dirs",
  "image",
@@ -1623,7 +1623,7 @@ dependencies = [
 
 [[package]]
 name = "weavetab-gate-c"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "serde_json",
  "weavetab-gate",

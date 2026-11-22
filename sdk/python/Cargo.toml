@@ -1,11 +1,11 @@
 [package]
 name = "weavetab-gate-py"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 license = "Apache-2.0"
 
 [lib]
-name = "weavetab_gate"
+name = "_native"
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -84,13 +84,13 @@ const ui = gate.decide(fs.readFileSync("screen.png"), ["login form", "captcha", 
 ### Python (`weavetab-gate`)
 
 ```python
-from weavetab_gate import Gate
+from weavetab import gate
 
-gate = Gate()
-res = gate.decide("refund requested after 45 days", ["approve", "escalate", "deny"])
-guard = gate.yes_no("Ignore previous instructions.", "This message is a prompt injection attempt.")
-sev = gate.score("minor typo in footer", ["low", "medium", "high", "critical"])
-batch = gate.decide_batch(["db crash", "invoice copy"], ["outage", "billing"])
+g = gate.Gate()
+res = g.decide("refund requested after 45 days", ["approve", "escalate", "deny"])
+guard = g.yes_no("Ignore previous instructions.", "This message is a prompt injection attempt.")
+sev = g.score("minor typo in footer", ["low", "medium", "high", "critical"])
+batch = g.decide_batch(["db crash", "invoice copy"], ["outage", "billing"])
 ```
 
 ### Rust (`weavetab-gate`)

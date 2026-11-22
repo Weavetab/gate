@@ -88,6 +88,7 @@ def main() -> None:
 
     token = os.environ.get("HF_TOKEN")
     api = HfApi(token=token) if token else HfApi()
+    api.create_repo(repo_id="weavetab/gate-1", repo_type="model", exist_ok=True)
     api.upload_folder(
         folder_path=str(opt),
         repo_id="weavetab/gate-1",

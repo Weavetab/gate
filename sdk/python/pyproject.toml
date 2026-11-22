@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "weavetab-gate"
-version = "0.1.0"
+version = "1.0.0"
 description = "Local-first multimodal zero-shot decision engine (text & image -> choices, yes/no, score) without PyTorch."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -24,4 +24,6 @@ Repository = "https://github.com/Weavetab/gate"
 Issues = "https://github.com/Weavetab/gate/issues"
 
 [tool.maturin]
+python-source = "python"
+module-name = "weavetab.gate._native"
 features = ["pyo3/extension-module"]

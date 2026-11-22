@@ -5,19 +5,19 @@ use std::path::{Path, PathBuf};
 use crate::GateError;
 
 pub const DEFAULT_TEXT_MODEL_URL: &str =
-    "https://huggingface.co/Xenova/gte-small/resolve/main/onnx/model_quantized.onnx";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/text/model_i8.onnx";
 pub const DEFAULT_TEXT_TOK_URL: &str =
-    "https://huggingface.co/Xenova/gte-small/resolve/main/tokenizer.json";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/text/tokenizer.json";
 
 pub const DEFAULT_NLI_MODEL_URL: &str =
-    "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/onnx/model_quantized.onnx";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/nli/model_i8.onnx";
 pub const DEFAULT_NLI_TOK_URL: &str =
-    "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/tokenizer.json";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/nli/tokenizer.json";
 
 pub const DEFAULT_VISION_MODEL_URL: &str =
-    "https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX/resolve/main/onnx/model_int8.onnx";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/vision/model_i8.onnx";
 pub const DEFAULT_VISION_TOK_URL: &str =
-    "https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX/resolve/main/tokenizer.json";
+    "https://huggingface.co/weavetab/gate-1/resolve/main/vision/tokenizer.json";
 
 pub(crate) fn cache_dir(override_dir: Option<&Path>) -> PathBuf {
     if let Some(p) = override_dir {
