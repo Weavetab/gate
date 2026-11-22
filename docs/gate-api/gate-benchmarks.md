@@ -26,11 +26,11 @@ All numbers below were measured on a **Linux x64 4-vCPU CPU (16 GB RAM, no GPU)*
 
 ## Visual Comparisons
 
-![Chart 1: Zero-Shot Accuracy Across 6 Decision Suites](/images/gate/chart1_gate_accuracy.png)
+![Chart 1: Zero-Shot Accuracy Across 6 Decision Suites](/images/gate/chart1_gate_accuracy.png?v=1.1)
 
-![Chart 2: Per-Decision Latency Comparison](/images/gate/chart2_gate_latency.png)
+![Chart 2: Per-Decision Latency Comparison](/images/gate/chart2_gate_latency.png?v=1.1)
 
-![Chart 3: Gate v1.1 Scaling & Head-to-Head Scorecard](/images/gate/chart3_gate_scaling.png)
+![Chart 3: Gate v1.1 Scaling & Head-to-Head Scorecard](/images/gate/chart3_gate_scaling.png?v=1.1)
 
 ## Reproducing Locally
 
