@@ -7,3 +7,5 @@ dist/
 *.part
 __pycache__/
 .pytest_cache/
+dist_weights/
+uv.lock

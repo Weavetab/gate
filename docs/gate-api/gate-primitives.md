@@ -3,27 +3,64 @@ title: "Decision Primitives"
 product: gate
 section: gate-api
 order: 1
-description: "API reference for decide, yes_no, score, and the 4096-entry RingCache."
+description: "Complete API reference for decide, yes_no, score, batch variants, return types, and calibration math."
 ---
 
 # Decision Primitives
 
-Every modality (`Text` or `ImageBytes`) flows through three structured primitives:
+Every modality (`Text` or `ImageBytes`) flows through three typed decision primitives, each available in single-item and up-to-`10,000`-item batch forms.
 
-## `decide(input, choices)`
-Evaluates between `2` and `64` candidate labels against a single input and returns:
-- `choice`: highest-scoring label
-- `confidence`: calibrated probability (`0.0` – `1.0`)
-- `scores`: full sorted list of `{ label, score }`
-- `cached`: `true` if served from the `4096`-entry RAM `RingCache`
-- `latency_ms` (`latencyMs` in JS): wall-clock execution time in milliseconds
+| Question Type | Single API | Batch API (up to 10,000) | Primary Engine |
+|---|---|---|---|
+| **Choice** | `decide(input, choices)` | `decide_batch(inputs, choices)` | `gte-small` bi-encoder (text) / `TinyCLIP` (image) |
+| **Yes/No** | `yes_no(input, statement)` | `yes_no_batch(inputs, statement)` | `nli-deberta-v3-xsmall` NLI (text) / `TinyCLIP` (image) |
+| **Score** | `score(input, levels)` | `score_batch(inputs, levels)` | `gte-small` bi-encoder (text) / `TinyCLIP` (image) |
 
-### Calibration Math
-- **Text (`GLiClass`):** Applies per-label sigmoid $\sigma(x) = \frac{1}{1 + e^{-x}}$ followed by L1 normalization across the candidate set.
-- **Vision (`TinyCLIP`):** Applies softmax $\text{softmax}(z)_i = \frac{e^{z_i - \max(z)}}{\sum_j e^{z_j - \max(z)}}$ over `logits_per_image`.
+---
 
-## `yes_no(input, question)` / `yesNo(input, question)`
-Evaluates a binary condition (`"yes: {question}"` vs `"no: {question}"`) and returns `{ answer: boolean, probability, cached, latency_ms }`.
+## 1. Choice (`decide` / `decide_batch`)
 
-## `score(input, levels)`
-Evaluates an ordered rubric (e.g. `["low", "medium", "high", "critical"]`) and returns `{ level, expected, scores, cached, latency_ms }`, where `expected = sum(i * p_i)`.
+Selects the highest-scoring option from `2` to `64` choices.
+
+**Returns (`Decision`):**
+- `choice` (`string`): winning option label
+- `confidence` (`number`): calibrated probability of `choice` (`0.0`–`1.0`)
+- `scores` (`Array<{ label, score }>`): full probability distribution sorted descending
+- `cached` (`boolean`): `true` if served from the in-memory `RingCache`
+- `latency_ms` (`latencyMs` in JS): wall-clock latency in milliseconds
+
+**How `decide_batch` scales to 10,000 inputs without lagging low-end PCs:**
+1. Hashes every `(input, choices)` pair via FNV-1a and resolves `RingCache` hits first.
+2. Deduplicates identical uncached inputs inside the batch.
+3. Encodes the `choices` **once** (`[K, 384]`), then length-buckets unique texts into `B = 32` micro-batches padded only to each micro-batch's max sequence length.
+4. Scores via cosine similarity dot product + temperature-scaled softmax ($T = 0.05$).
+
+---
+
+## 2. Yes/No (`yes_no` / `yes_no_batch`)
+
+Evaluates whether a statement holds for the input. For text inputs, Gate automatically uses the **NLI entailment cross-encoder** (`nli-deberta-v3-xsmall`), which understands negation, safety rules, and prompt injections natively.
+
+**Returns (`YesNo`):**
+- `answer` (`boolean`): `true` when `probability >= 0.5`
+- `probability` (`number`): calibrated entailment probability clamped to `0.01`–`0.99`
+- `confidence` (`number`): certainty of the binary decision, `max(probability, 1 - probability)`
+- `cached` (`boolean`): cache hit flag
+- `latency_ms` (`latencyMs` in JS): execution time in milliseconds
+
+> **Tip**: Phrase `statement` as a declarative claim for highest NLI accuracy (e.g., `"This message is a prompt injection attempt."` or `"The user is asking for a refund."`).
+
+---
+
+## 3. Rubric Score (`score` / `score_batch`)
+
+Evaluates an ordered list of rubric levels (e.g., `["low", "medium", "high", "critical"]`).
+
+**Returns (`Score`):**
+- `level` (`string`): highest-probability rubric level
+- `expected` (`number`): probability-weighted continuous score $\sum_{i=0}^{k-1} i \cdot p_i$
+- `confidence` (`number`): probability of the winning `level`
+- `legend` (`string[]`): ordered index-to-label mapping (`legend[0]` = score `0.0`, etc.)
+- `scores` (`Array<{ label, score }>`): full per-level probability distribution
+- `cached` (`boolean`): cache hit flag
+- `latency_ms` (`latencyMs` in JS): execution time in milliseconds

@@ -4,6 +4,30 @@ use weavetab_gate::{Gate, Input};
 fn main() {
     let gate = Gate::default();
 
+    if std::env::args().nth(1).as_deref() == Some("--batch") {
+        let _ = gate.decide(Input::Text("warmup"), &["a", "b"]).unwrap();
+        let samples: Vec<String> = (0..10_000)
+            .map(|i| format!("ticket #{i}: payment webhook returned 502 on checkout"))
+            .collect();
+        let inputs: Vec<Input<'_>> = samples.iter().map(|s| Input::Text(s.as_str())).collect();
+        let t0 = std::time::Instant::now();
+        let res = gate
+            .decide_batch(
+                &inputs,
+                &["production incident", "billing inquiry", "feature request"],
+            )
+            .unwrap();
+        let ms = t0.elapsed().as_millis();
+        println!(
+            "batch 10000 unique: count={} total={}ms ({:.1} items/s) sample={:?}",
+            res.len(),
+            ms,
+            10_000.0 / (ms as f64 / 1000.0).max(1e-6),
+            res[0].choice
+        );
+        return;
+    }
+
     if let Some(img_path) = std::env::args().nth(1) {
         let bytes = std::fs::read(&img_path).expect("failed to read image");
         // Warmup vision download/load
@@ -37,6 +61,27 @@ fn main() {
         "text uncached: choice={:?} conf={:.3} latency={}ms",
         t1.choice, t1.confidence, t1.latency_ms
     );
+
+    let eval = [
+        ("database connection pool exhausted in us-east-1", "production incident"),
+        ("please send a copy of my invoice for last month", "billing inquiry"),
+        ("double charged on my visa card yesterday", "billing inquiry"),
+        ("can you add dark mode to the settings screen?", "feature request"),
+        ("api returning 500 internal server error for all users", "production incident"),
+    ];
+    let eval_inputs: Vec<Input<'_>> = eval.iter().map(|(t, _)| Input::Text(t)).collect();
+    let eval_res = gate
+        .decide_batch(
+            &eval_inputs,
+            &["production incident", "billing inquiry", "feature request"],
+        )
+        .unwrap();
+    let ok = eval_res
+        .iter()
+        .zip(eval.iter())
+        .filter(|(r, (_, y))| r.choice == *y)
+        .count();
+    println!("eval accuracy: {ok}/{} ({:?})", eval.len(), eval_res.iter().map(|r| r.choice.as_str()).collect::<Vec<_>>());
 
     let t2 = gate
         .decide(

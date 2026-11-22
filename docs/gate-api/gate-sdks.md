@@ -3,26 +3,36 @@ title: "SDK Architecture & Config"
 product: gate
 section: gate-api
 order: 2
-description: "Isolated per-language SDK layout (Node.js, Python, C ABI) and environment overrides."
+description: "Multi-language SDK layout, GateConfig options, low-end PC thread guardrails, and environment overrides."
 ---
 
 # SDK Architecture & Configuration
 
-`Weavetab/gate` separates the core Rust engine (`crates/gate-core`) from every language binding (`sdk/`), so adding or updating an SDK never touches inference logic:
+`Weavetab/gate` isolates the core Rust engine (`crates/gate-core`) from every language binding (`sdk/`), so all languages share identical inference, caching, and batching behavior:
 
 ```text
-crates/gate-core/   # Stable Rust + ort + tokenizers core
-sdk/node/           # @weavetab/gate (napi-rs)
-sdk/python/         # weavetab-gate (PyO3 + maturin)
+crates/gate-core/   # Rust + ONNX Runtime (ort) + tokenizers + RingCache
+sdk/node/           # @weavetab/gate (napi-rs native .node binaries)
+sdk/python/         # weavetab-gate (PyO3 + maturin native wheels)
 sdk/c/              # weavetab_gate.h C ABI (.dll / .so / .dylib) for C, C++, Go, Java
 ```
+
+## Configuration (`GateConfig`)
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `cache_dir` (`cacheDir`) | `string \| null` | OS cache dir | Directory for cached ONNX weights and tokenizers |
+| `cache_entries` (`cacheEntries`) | `number` | `4096` | Max entries in the in-memory `RingCache` |
+| `threads` | `number` | `clamp(cores - 1, 1, 4)` | ONNX Runtime intra-op CPU threads (leaves 1 core free for OS responsiveness on low-end laptops) |
 
 ## Environment Variables
 
 | Variable | Purpose |
 |---|---|
 | `WEAVETAB_GATE_CACHE` | Override default `~/.cache/weavetab-gate/` weight directory |
-| `WEAVETAB_GATE_TEXT_URL` | Custom text ONNX model download URL |
-| `WEAVETAB_GATE_TEXT_TOK_URL` | Custom text `tokenizer.json` URL |
-| `WEAVETAB_GATE_VISION_URL` | Custom vision ONNX model download URL |
+| `WEAVETAB_GATE_TEXT_URL` | Custom bi-encoder text ONNX model URL |
+| `WEAVETAB_GATE_TEXT_TOK_URL` | Custom bi-encoder `tokenizer.json` URL |
+| `WEAVETAB_GATE_NLI_URL` | Custom NLI cross-encoder ONNX model URL |
+| `WEAVETAB_GATE_NLI_TOK_URL` | Custom NLI `tokenizer.json` URL |
+| `WEAVETAB_GATE_VISION_URL` | Custom vision ONNX model URL |
 | `WEAVETAB_GATE_VISION_TOK_URL` | Custom vision `tokenizer.json` URL |

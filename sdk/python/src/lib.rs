@@ -84,6 +84,7 @@ impl Gate {
         let out = PyDict::new(py);
         out.set_item("answer", r.answer)?;
         out.set_item("probability", r.probability)?;
+        out.set_item("confidence", r.confidence)?;
         out.set_item("cached", r.cached)?;
         out.set_item("latency_ms", r.latency_ms)?;
         Ok(out)
@@ -100,10 +101,154 @@ impl Gate {
         let out = PyDict::new(py);
         out.set_item("level", s.level)?;
         out.set_item("expected", s.expected)?;
+        out.set_item("confidence", s.confidence)?;
+        out.set_item("legend", s.legend)?;
         out.set_item("scores", scores_to_py(py, &s.scores)?)?;
         out.set_item("cached", s.cached)?;
         out.set_item("latency_ms", s.latency_ms)?;
         Ok(out)
+    }
+
+    fn decide_batch<'py>(
+        &self,
+        py: Python<'py>,
+        inputs: Vec<Bound<'py, PyAny>>,
+        choices: Vec<String>,
+    ) -> PyResult<Vec<Bound<'py, PyDict>>> {
+        enum OwnedInput {
+            Text(String),
+            Bytes(Vec<u8>),
+        }
+        let mut owned = Vec::with_capacity(inputs.len());
+        for inp in &inputs {
+            if let Ok(t) = inp.extract::<String>() {
+                owned.push(OwnedInput::Text(t));
+            } else if let Ok(b) = inp.downcast::<PyBytes>() {
+                owned.push(OwnedInput::Bytes(b.as_bytes().to_vec()));
+            } else {
+                return Err(PyValueError::new_err(
+                    "each input must be str (text) or bytes (image)",
+                ));
+            }
+        }
+        let core_inputs: Vec<Input<'_>> = owned
+            .iter()
+            .map(|o| match o {
+                OwnedInput::Text(t) => Input::Text(t.as_str()),
+                OwnedInput::Bytes(b) => Input::ImageBytes(b.as_slice()),
+            })
+            .collect();
+        let refs: Vec<&str> = choices.iter().map(String::as_str).collect();
+        let list = self
+            .inner
+            .decide_batch(&core_inputs, &refs)
+            .map_err(to_py_err)?;
+        let mut out_list = Vec::with_capacity(list.len());
+        for d in list {
+            let out = PyDict::new(py);
+            out.set_item("choice", d.choice)?;
+            out.set_item("confidence", d.confidence)?;
+            out.set_item("scores", scores_to_py(py, &d.scores)?)?;
+            out.set_item("cached", d.cached)?;
+            out.set_item("latency_ms", d.latency_ms)?;
+            out_list.push(out);
+        }
+        Ok(out_list)
+    }
+
+    fn yes_no_batch<'py>(
+        &self,
+        py: Python<'py>,
+        inputs: Vec<Bound<'py, PyAny>>,
+        question: &str,
+    ) -> PyResult<Vec<Bound<'py, PyDict>>> {
+        enum OwnedInput {
+            Text(String),
+            Bytes(Vec<u8>),
+        }
+        let mut owned = Vec::with_capacity(inputs.len());
+        for inp in &inputs {
+            if let Ok(t) = inp.extract::<String>() {
+                owned.push(OwnedInput::Text(t));
+            } else if let Ok(b) = inp.downcast::<PyBytes>() {
+                owned.push(OwnedInput::Bytes(b.as_bytes().to_vec()));
+            } else {
+                return Err(PyValueError::new_err(
+                    "each input must be str (text) or bytes (image)",
+                ));
+            }
+        }
+        let core_inputs: Vec<Input<'_>> = owned
+            .iter()
+            .map(|o| match o {
+                OwnedInput::Text(t) => Input::Text(t.as_str()),
+                OwnedInput::Bytes(b) => Input::ImageBytes(b.as_slice()),
+            })
+            .collect();
+        let list = self
+            .inner
+            .yes_no_batch(&core_inputs, question)
+            .map_err(to_py_err)?;
+        let mut out_list = Vec::with_capacity(list.len());
+        for r in list {
+            let out = PyDict::new(py);
+            out.set_item("answer", r.answer)?;
+            out.set_item("probability", r.probability)?;
+            out.set_item("confidence", r.confidence)?;
+            out.set_item("cached", r.cached)?;
+            out.set_item("latency_ms", r.latency_ms)?;
+            out_list.push(out);
+        }
+        Ok(out_list)
+    }
+
+    fn score_batch<'py>(
+        &self,
+        py: Python<'py>,
+        inputs: Vec<Bound<'py, PyAny>>,
+        levels: Vec<String>,
+    ) -> PyResult<Vec<Bound<'py, PyDict>>> {
+        enum OwnedInput {
+            Text(String),
+            Bytes(Vec<u8>),
+        }
+        let mut owned = Vec::with_capacity(inputs.len());
+        for inp in &inputs {
+            if let Ok(t) = inp.extract::<String>() {
+                owned.push(OwnedInput::Text(t));
+            } else if let Ok(b) = inp.downcast::<PyBytes>() {
+                owned.push(OwnedInput::Bytes(b.as_bytes().to_vec()));
+            } else {
+                return Err(PyValueError::new_err(
+                    "each input must be str (text) or bytes (image)",
+                ));
+            }
+        }
+        let core_inputs: Vec<Input<'_>> = owned
+            .iter()
+            .map(|o| match o {
+                OwnedInput::Text(t) => Input::Text(t.as_str()),
+                OwnedInput::Bytes(b) => Input::ImageBytes(b.as_slice()),
+            })
+            .collect();
+        let refs: Vec<&str> = levels.iter().map(String::as_str).collect();
+        let list = self
+            .inner
+            .score_batch(&core_inputs, &refs)
+            .map_err(to_py_err)?;
+        let mut out_list = Vec::with_capacity(list.len());
+        for s in list {
+            let out = PyDict::new(py);
+            out.set_item("level", s.level)?;
+            out.set_item("expected", s.expected)?;
+            out.set_item("confidence", s.confidence)?;
+            out.set_item("legend", s.legend)?;
+            out.set_item("scores", scores_to_py(py, &s.scores)?)?;
+            out.set_item("cached", s.cached)?;
+            out.set_item("latency_ms", s.latency_ms)?;
+            out_list.push(out);
+        }
+        Ok(out_list)
     }
 }
 

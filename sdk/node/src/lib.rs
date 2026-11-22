@@ -30,6 +30,7 @@ pub struct Decision {
 pub struct YesNo {
     pub answer: bool,
     pub probability: f64,
+    pub confidence: f64,
     pub cached: bool,
     pub latency_ms: f64,
 }
@@ -38,6 +39,8 @@ pub struct YesNo {
 pub struct Score {
     pub level: String,
     pub expected: f64,
+    pub confidence: f64,
+    pub legend: Vec<String>,
     pub scores: Vec<OptionScore>,
     pub cached: bool,
     pub latency_ms: f64,
@@ -117,6 +120,7 @@ impl Gate {
         Ok(YesNo {
             answer: r.answer,
             probability: r.probability as f64,
+            confidence: r.confidence as f64,
             cached: r.cached,
             latency_ms: r.latency_ms as f64,
         })
@@ -129,9 +133,102 @@ impl Gate {
         Ok(Score {
             level: s.level,
             expected: s.expected as f64,
+            confidence: s.confidence as f64,
+            legend: s.legend,
             scores: map_scores(s.scores),
             cached: s.cached,
             latency_ms: s.latency_ms as f64,
         })
+    }
+
+    #[napi]
+    pub fn decide_batch(
+        &self,
+        inputs: Vec<Either<String, Buffer>>,
+        choices: Vec<String>,
+    ) -> Result<Vec<Decision>> {
+        let refs: Vec<&str> = choices.iter().map(String::as_str).collect();
+        let core_inputs: Vec<Input<'_>> = inputs
+            .iter()
+            .map(|inp| match inp {
+                Either::A(s) => Input::Text(s.as_str()),
+                Either::B(b) => Input::ImageBytes(b.as_ref()),
+            })
+            .collect();
+        let list = self
+            .inner
+            .decide_batch(&core_inputs, &refs)
+            .map_err(to_err)?;
+        Ok(list
+            .into_iter()
+            .map(|d| Decision {
+                choice: d.choice,
+                confidence: d.confidence as f64,
+                scores: map_scores(d.scores),
+                cached: d.cached,
+                latency_ms: d.latency_ms as f64,
+            })
+            .collect())
+    }
+
+    #[napi]
+    pub fn yes_no_batch(
+        &self,
+        inputs: Vec<Either<String, Buffer>>,
+        question: String,
+    ) -> Result<Vec<YesNo>> {
+        let core_inputs: Vec<Input<'_>> = inputs
+            .iter()
+            .map(|inp| match inp {
+                Either::A(s) => Input::Text(s.as_str()),
+                Either::B(b) => Input::ImageBytes(b.as_ref()),
+            })
+            .collect();
+        let list = self
+            .inner
+            .yes_no_batch(&core_inputs, &question)
+            .map_err(to_err)?;
+        Ok(list
+            .into_iter()
+            .map(|r| YesNo {
+                answer: r.answer,
+                probability: r.probability as f64,
+                confidence: r.confidence as f64,
+                cached: r.cached,
+                latency_ms: r.latency_ms as f64,
+            })
+            .collect())
+    }
+
+    #[napi]
+    pub fn score_batch(
+        &self,
+        inputs: Vec<Either<String, Buffer>>,
+        levels: Vec<String>,
+    ) -> Result<Vec<Score>> {
+        let refs: Vec<&str> = levels.iter().map(String::as_str).collect();
+        let core_inputs: Vec<Input<'_>> = inputs
+            .iter()
+            .map(|inp| match inp {
+                Either::A(s) => Input::Text(s.as_str()),
+                Either::B(b) => Input::ImageBytes(b.as_ref()),
+            })
+            .collect();
+        let list = self
+            .inner
+            .score_batch(&core_inputs, &refs)
+            .map_err(to_err)?;
+        Ok(list
+            .into_iter()
+            .map(|s| Score {
+                level: s.level,
+                expected: s.expected as f64,
+                confidence: s.confidence as f64,
+                legend: s.legend,
+                scores: map_scores(s.scores),
+                cached: s.cached,
+                latency_ms: s.latency_ms as f64,
+            })
+            .collect())
     }
 }

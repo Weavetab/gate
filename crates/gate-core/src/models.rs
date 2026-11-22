@@ -5,9 +5,14 @@ use std::path::{Path, PathBuf};
 use crate::GateError;
 
 pub const DEFAULT_TEXT_MODEL_URL: &str =
-    "https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/model_i8.onnx";
+    "https://huggingface.co/Xenova/gte-small/resolve/main/onnx/model_quantized.onnx";
 pub const DEFAULT_TEXT_TOK_URL: &str =
-    "https://huggingface.co/cnmoro/gliclass-edge-v3.0-onnx/resolve/main/tokenizer.json";
+    "https://huggingface.co/Xenova/gte-small/resolve/main/tokenizer.json";
+
+pub const DEFAULT_NLI_MODEL_URL: &str =
+    "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/onnx/model_quantized.onnx";
+pub const DEFAULT_NLI_TOK_URL: &str =
+    "https://huggingface.co/Xenova/nli-deberta-v3-xsmall/resolve/main/tokenizer.json";
 
 pub const DEFAULT_VISION_MODEL_URL: &str =
     "https://huggingface.co/twn39/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M-ONNX/resolve/main/onnx/model_int8.onnx";

@@ -20,6 +20,7 @@ export interface Decision {
 export interface YesNo {
   answer: boolean;
   probability: number;
+  confidence: number;
   cached: boolean;
   latencyMs: number;
 }
@@ -27,6 +28,8 @@ export interface YesNo {
 export interface Score {
   level: string;
   expected: number;
+  confidence: number;
+  legend: string[];
   scores: OptionScore[];
   cached: boolean;
   latencyMs: number;
@@ -40,4 +43,7 @@ export class Gate {
   decide(input: GateInput, choices: string[]): Decision;
   yesNo(input: GateInput, question: string): YesNo;
   score(input: GateInput, levels: string[]): Score;
+  decideBatch(inputs: GateInput[], choices: string[]): Decision[];
+  yesNoBatch(inputs: GateInput[], question: string): YesNo[];
+  scoreBatch(inputs: GateInput[], levels: string[]): Score[];
 }

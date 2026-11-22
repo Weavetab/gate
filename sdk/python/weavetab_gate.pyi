@@ -16,12 +16,15 @@ class Decision(TypedDict):
 class YesNo(TypedDict):
     answer: bool
     probability: float
+    confidence: float
     cached: bool
     latency_ms: int
 
 class Score(TypedDict):
     level: str
     expected: float
+    confidence: float
+    legend: list[str]
     scores: list[OptionScore]
     cached: bool
     latency_ms: int
@@ -37,3 +40,6 @@ class Gate:
     def decide(self, input: GateInput, choices: list[str]) -> Decision: ...
     def yes_no(self, input: GateInput, question: str) -> YesNo: ...
     def score(self, input: GateInput, levels: list[str]) -> Score: ...
+    def decide_batch(self, inputs: list[GateInput], choices: list[str]) -> list[Decision]: ...
+    def yes_no_batch(self, inputs: list[GateInput], question: str) -> list[YesNo]: ...
+    def score_batch(self, inputs: list[GateInput], levels: list[str]) -> list[Score]: ...
